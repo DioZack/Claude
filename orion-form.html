@@ -1,0 +1,470 @@
+<div id="form"></div>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  .form-card{
+    max-width:640px;
+    margin:0 auto;
+    background:#fff;
+    border-radius:18px;
+    padding:40px;
+    box-shadow:0 12px 30px rgba(26,26,26,0.08);
+    font-family:'Lato', sans-serif;
+  }
+  .form-row{margin-bottom:16px;}
+  .form-row label{
+    display:block;
+    font-size:13px;
+    font-weight:700;
+    font-family:'Poppins',sans-serif;
+    margin-bottom:6px;
+    color:#444;
+  }
+  .form-row input, .form-row select{
+    width:100%;
+    padding:14px 16px;
+    border-radius:10px;
+    border:1.5px solid #ddd6cd;
+    font-family:'Lato',sans-serif;
+    font-size:15px;
+    background:#fff;
+    color:#1A1A1A;
+    transform:scale(1);
+    transition:border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  }
+  .form-row input:hover, .form-row select:hover{
+    transform:scale(1.015);
+    box-shadow:0 0 0 4px rgba(215,25,32,.16);
+    border-color:#D71920;
+  }
+  .form-row input:focus, .form-row select:focus{
+    outline:none;
+    transform:scale(1.015);
+    border-color:#D71920;
+    box-shadow:0 0 0 4px rgba(215,25,32,.22);
+  }
+  .form-row input.invalid, .form-row select.invalid{
+    border-color:#D71920;
+    background:#fff7f6;
+  }
+  .form-row .error-msg{
+    display:none;
+    font-size:12px;
+    color:#D71920;
+    margin-top:5px;
+    font-weight:700;
+  }
+  .form-row.has-error .error-msg{display:block;}
+
+  .form-grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:520px){
+    .form-grid-2{grid-template-columns:1fr;}
+  }
+
+  /* Campo condicional "Outro" do maior desafio */
+  .form-row#row-desafio-outro{
+    display:none;
+    overflow:hidden;
+    max-height:0;
+    margin-bottom:0;
+    opacity:0;
+    transition:max-height .25s ease, opacity .2s ease, margin-bottom .25s ease;
+  }
+  .form-row#row-desafio-outro.is-visible{
+    display:block;
+    max-height:120px;
+    margin-bottom:16px;
+    opacity:1;
+  }
+
+  .btn-glow{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    font-family:'Poppins', sans-serif;
+    font-weight:700;
+    font-size:15px;
+    color:#fff;
+    background:linear-gradient(340deg, #1A1A1A, #D71920);
+    border:none;
+    border-radius:999px;
+    padding:17px 34px;
+    cursor:pointer;
+    position:relative;
+    text-decoration:none;
+    width:100%;
+    box-shadow:0 0 0 0 rgba(215,25,32,.55), 0 10px 24px rgba(215,25,32,.35);
+    transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
+    animation:btn-glow-pulse 2.2s infinite;
+  }
+  .btn-glow:hover{
+    background:linear-gradient(340deg, #1A1A1A, #a91217);
+    transform:translateY(-3px) scale(1.03);
+    box-shadow:0 0 0 10px rgba(215,25,32,0), 0 14px 30px rgba(215,25,32,.5);
+    animation-play-state:paused;
+  }
+  .btn-glow:active{
+    transform:translateY(-1px) scale(0.98);
+  }
+  .btn-glow:disabled{
+    cursor:not-allowed;
+    opacity:.75;
+    animation-play-state:paused;
+    transform:none;
+  }
+  @keyframes btn-glow-pulse{
+    0%{ box-shadow:0 0 0 0 rgba(215,25,32,.55), 0 10px 24px rgba(215,25,32,.35); }
+    70%{ box-shadow:0 0 0 14px rgba(215,25,32,0), 0 10px 24px rgba(215,25,32,.35); }
+    100%{ box-shadow:0 0 0 0 rgba(215,25,32,0), 0 10px 24px rgba(215,25,32,.35); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .btn-glow{animation:none;}
+    .form-row input, .form-row select{transition:none;}
+  }
+
+  /* ===== Janelinha (modal) de agradecimento ===== */
+  .orion-modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(26,26,26,.55);
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:9999;
+    opacity:0;
+    transition:opacity .2s ease;
+  }
+  .orion-modal-overlay.is-open{
+    display:flex;
+    opacity:1;
+  }
+  .orion-modal{
+    background:#fff;
+    border-radius:18px;
+    max-width:420px;
+    width:100%;
+    padding:36px 32px;
+    text-align:center;
+    font-family:'Lato', sans-serif;
+    box-shadow:0 20px 50px rgba(26,26,26,.25);
+    transform:scale(.9) translateY(10px);
+    opacity:0;
+    transition:transform .25s ease, opacity .25s ease;
+  }
+  .orion-modal-overlay.is-open .orion-modal{
+    transform:scale(1) translateY(0);
+    opacity:1;
+  }
+  .orion-modal-icon{
+    width:64px;
+    height:64px;
+    margin:0 auto 18px;
+    border-radius:50%;
+    background:linear-gradient(340deg, #1A1A1A, #D71920);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:30px;
+  }
+  .orion-modal h3{
+    font-family:'Poppins', sans-serif;
+    font-size:20px;
+    color:#1A1A1A;
+    margin:0 0 10px;
+  }
+  .orion-modal p{
+    font-size:15px;
+    line-height:1.5;
+    color:#555;
+    margin:0 0 24px;
+  }
+  .orion-modal .btn-glow{
+    width:auto;
+    padding:14px 30px;
+  }
+</style>
+
+<form class="form-card" id="orionForm" novalidate>
+  <div class="form-row" id="row-nome">
+    <label>Nome</label>
+    <input type="text" id="campo-nome" placeholder="Seu nome completo" required>
+    <span class="error-msg">Digite seu nome completo (apenas letras).</span>
+  </div>
+  <div class="form-row" id="row-empresa">
+    <label>Empresa</label>
+    <input type="text" id="campo-empresa" placeholder="Nome da empresa" required>
+    <span class="error-msg">Digite o nome da empresa.</span>
+  </div>
+  <div class="form-grid-2">
+    <div class="form-row" id="row-whatsapp">
+      <label>Whatsapp</label>
+      <input type="tel" id="campo-whatsapp" placeholder="(16) 90000-0000" required>
+      <span class="error-msg">Digite um número válido: (XX) XXXXX-XXXX.</span>
+    </div>
+    <div class="form-row" id="row-email">
+      <label>E-mail</label>
+      <input type="email" id="campo-email" placeholder="voce@empresa.com" required>
+      <span class="error-msg">Digite um e-mail válido.</span>
+    </div>
+  </div>
+  <div class="form-row" id="row-faturamento">
+    <label>Faturamento</label>
+    <select id="campo-faturamento" required>
+      <option value="" disabled selected>Selecione uma faixa</option>
+      <option>Até R$ 360 mil/ano</option>
+      <option>De R$ 360 mil a R$ 4,8 milhões/ano</option>
+      <option>Acima de R$ 4,8 milhões/ano</option>
+    </select>
+    <span class="error-msg">Selecione uma faixa de faturamento.</span>
+  </div>
+  <div class="form-row" id="row-desafio">
+    <label>Maior desafio</label>
+    <select id="campo-desafio" required>
+      <option value="" disabled selected>Selecione uma opção</option>
+      <option>Não conheço bem meu público</option>
+      <option>Quero abrir um novo ponto ou expandir</option>
+      <option>Quero lançar um novo produto ou serviço</option>
+      <option>Preciso validar uma decisão antes de investir</option>
+      <option>Outro</option>
+    </select>
+    <span class="error-msg">Selecione uma opção.</span>
+  </div>
+  <div class="form-row" id="row-desafio-outro">
+    <label>Conte um pouco mais sobre esse desafio</label>
+    <input type="text" id="campo-desafio-outro" placeholder="Descreva sua maior dor ou desafio">
+    <span class="error-msg">Descreva seu desafio.</span>
+  </div>
+  <button type="submit" class="btn-glow" style="margin-top:8px;">
+    Enviar Formulário
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14M13 6l6 6-6 6"/>
+    </svg>
+  </button>
+</form>
+
+<!-- Janelinha de agradecimento exibida após o envio com sucesso -->
+<div class="orion-modal-overlay" id="orionModalOverlay">
+  <div class="orion-modal" role="dialog" aria-modal="true" aria-labelledby="orionModalTitulo">
+    <div class="orion-modal-icon">✓</div>
+    <h3 id="orionModalTitulo">Recebemos seu pedido!</h3>
+    <p>Obrigado pelo contato. Nossa equipe vai analisar suas informações e entraremos em contato em breve.</p>
+    <button type="button" class="btn-glow" id="orionModalFechar">Ok, entendi</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const form = document.getElementById('orionForm');
+  const campoNome = document.getElementById('campo-nome');
+  const campoEmpresa = document.getElementById('campo-empresa');
+  const campoWhatsapp = document.getElementById('campo-whatsapp');
+  const campoEmail = document.getElementById('campo-email');
+  const campoFaturamento = document.getElementById('campo-faturamento');
+  const campoDesafio = document.getElementById('campo-desafio');
+  const rowDesafioOutro = document.getElementById('row-desafio-outro');
+  const campoDesafioOutro = document.getElementById('campo-desafio-outro');
+  const modalOverlay = document.getElementById('orionModalOverlay');
+  const modalFechar = document.getElementById('orionModalFechar');
+
+  // ===== Bloqueia digitação errada em tempo real =====
+
+  campoNome.addEventListener('input', function(){
+    this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '');
+  });
+
+  campoWhatsapp.addEventListener('input', function(){
+    let v = this.value.replace(/\D/g, '').slice(0, 11);
+    if (v.length > 6) {
+      v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+    } else if (v.length > 2) {
+      v = `(${v.slice(0,2)}) ${v.slice(2)}`;
+    } else if (v.length > 0) {
+      v = `(${v}`;
+    }
+    this.value = v;
+  });
+
+  // ===== Mostra o campo de texto livre quando "Outro" é selecionado =====
+
+  function isOutroSelecionado(){
+    return campoDesafio.value === 'Outro';
+  }
+
+  function atualizarCampoOutro(){
+    if (isOutroSelecionado()) {
+      rowDesafioOutro.classList.add('is-visible');
+      campoDesafioOutro.setAttribute('required', 'required');
+      campoDesafioOutro.focus();
+    } else {
+      rowDesafioOutro.classList.remove('is-visible');
+      campoDesafioOutro.removeAttribute('required');
+      campoDesafioOutro.value = '';
+      marcarErro(campoDesafioOutro, false);
+    }
+  }
+
+  campoDesafio.addEventListener('change', function(){
+    validarDesafio();
+    atualizarCampoOutro();
+  });
+
+  // ===== Regras de validação, uma função por campo =====
+
+  function validarNome(){
+    const ok = /^[A-Za-zÀ-ÿ]+(\s[A-Za-zÀ-ÿ]+)+$/.test(campoNome.value.trim());
+    marcarErro(campoNome, !ok);
+    return ok;
+  }
+
+  function validarEmpresa(){
+    const ok = campoEmpresa.value.trim().length >= 2;
+    marcarErro(campoEmpresa, !ok);
+    return ok;
+  }
+
+  function validarWhatsapp(){
+    const digitos = campoWhatsapp.value.replace(/\D/g, '');
+    const ok = digitos.length === 10 || digitos.length === 11;
+    marcarErro(campoWhatsapp, !ok);
+    return ok;
+  }
+
+  // Regex de e-mail mais completa (aceita subdomínios, pontos, hífens, +alias etc.)
+  function validarEmail(){
+    const regexEmail = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+    const ok = regexEmail.test(campoEmail.value.trim());
+    marcarErro(campoEmail, !ok);
+    return ok;
+  }
+
+  function validarFaturamento(){
+    const ok = campoFaturamento.value !== '';
+    marcarErro(campoFaturamento, !ok);
+    return ok;
+  }
+
+  function validarDesafio(){
+    const ok = campoDesafio.value !== '';
+    marcarErro(campoDesafio, !ok);
+    return ok;
+  }
+
+  function validarDesafioOutro(){
+    // só precisa ser válido quando "Outro" está selecionado
+    if (!isOutroSelecionado()) {
+      marcarErro(campoDesafioOutro, false);
+      return true;
+    }
+    const ok = campoDesafioOutro.value.trim().length >= 3;
+    marcarErro(campoDesafioOutro, !ok);
+    return ok;
+  }
+
+  function marcarErro(input, temErro){
+    const row = input.closest('.form-row');
+    row.classList.toggle('has-error', temErro);
+    input.classList.toggle('invalid', temErro);
+  }
+
+  // Cada campo só valida a si mesmo ao sair (blur) — não mexe nos outros
+  campoNome.addEventListener('blur', validarNome);
+  campoEmpresa.addEventListener('blur', validarEmpresa);
+  campoWhatsapp.addEventListener('blur', validarWhatsapp);
+  campoEmail.addEventListener('blur', validarEmail);
+  campoFaturamento.addEventListener('change', validarFaturamento);
+  campoDesafioOutro.addEventListener('blur', validarDesafioOutro);
+
+  // Assim que o campo com erro é corrigido, o aviso some na hora (sem esperar sair de novo)
+  campoNome.addEventListener('input', function(){ if (campoNome.closest('.form-row').classList.contains('has-error')) validarNome(); });
+  campoEmpresa.addEventListener('input', function(){ if (campoEmpresa.closest('.form-row').classList.contains('has-error')) validarEmpresa(); });
+  campoWhatsapp.addEventListener('input', function(){ if (campoWhatsapp.closest('.form-row').classList.contains('has-error')) validarWhatsapp(); });
+  campoEmail.addEventListener('input', function(){ if (campoEmail.closest('.form-row').classList.contains('has-error')) validarEmail(); });
+  campoDesafioOutro.addEventListener('input', function(){ if (campoDesafioOutro.closest('.form-row').classList.contains('has-error')) validarDesafioOutro(); });
+
+  // ===== Janelinha de agradecimento =====
+
+  function abrirModal(){
+    modalOverlay.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    modalFechar.focus();
+  }
+
+  function fecharModal(){
+    modalOverlay.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+
+  modalFechar.addEventListener('click', fecharModal);
+  modalOverlay.addEventListener('click', function(e){
+    if (e.target === modalOverlay) fecharModal();
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && modalOverlay.classList.contains('is-open')) fecharModal();
+  });
+
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+
+    // Só no envio final é que TODOS os campos são checados de uma vez
+    const nomeOk = validarNome();
+    const empresaOk = validarEmpresa();
+    const whatsappOk = validarWhatsapp();
+    const emailOk = validarEmail();
+    const faturamentoOk = validarFaturamento();
+    const desafioOk = validarDesafio();
+    const desafioOutroOk = validarDesafioOutro();
+
+    if (!(nomeOk && empresaOk && whatsappOk && emailOk && faturamentoOk && desafioOk && desafioOutroOk)) {
+      const primeiroErro = form.querySelector('.has-error input, .has-error select');
+      if (primeiroErro) primeiroErro.focus();
+      return;
+    }
+
+    const btn = form.querySelector('button[type="submit"]');
+    const textoOriginal = btn.innerHTML;
+    btn.innerHTML = 'Enviando...';
+    btn.disabled = true;
+
+    const dados = {
+      nome:          campoNome.value.trim(),
+      empresa:       campoEmpresa.value.trim(),
+      whatsapp:      campoWhatsapp.value.trim(),
+      email:         campoEmail.value.trim(),
+      faturamento:   campoFaturamento.value,
+      desafio:       campoDesafio.value,
+      desafioOutro:  isOutroSelecionado() ? campoDesafioOutro.value.trim() : '',
+    };
+
+    try {
+      const resp = await fetch('/wp-json/orion/v1/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+      });
+      const resultado = await resp.json();
+
+      if (resultado.ok) {
+        form.reset();
+        atualizarCampoOutro();
+        [campoNome, campoEmpresa, campoWhatsapp, campoEmail, campoFaturamento, campoDesafio, campoDesafioOutro]
+          .forEach(function(campo){ marcarErro(campo, false); });
+        btn.innerHTML = textoOriginal;
+        btn.disabled = false;
+        abrirModal();
+      } else {
+        alert('Não conseguimos enviar agora. Tente novamente em alguns minutos.');
+        btn.innerHTML = textoOriginal;
+        btn.disabled = false;
+      }
+    } catch (err) {
+      alert('Não conseguimos enviar agora. Tente novamente em alguns minutos.');
+      btn.innerHTML = textoOriginal;
+      btn.disabled = false;
+    }
+  });
+})();
+</script>
